@@ -244,7 +244,7 @@ Now that you have full control over how the server handles the response, you
 have the freedom to design your API as you see fit — just think about what kind
 of data you need for your frontend application.
 
-Let's make one more small adjustment to the controller. By default, Flask sets
+Let's make another small adjustment to our view. By default, Flask sets
 a [response header][response header] with the `Content-Type: text/html`, since
 in general, web servers are used to send HTML content to browsers. Our server,
 however, will be used to send JSON data, as you've seen above. We can indicate
