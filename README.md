@@ -53,8 +53,8 @@ speaks HTTP!
 
 ## Setup
 
-We'll continue building our Flask application using the code from the previous
-lesson. Run these commands to install the dependencies and set up the database:
+We'll build up our Flask application from a few models and views that are ready
+to go. Run these commands to install the dependencies and set up the database:
 
 ```console
 $ pipenv install && pipenv shell
