@@ -53,7 +53,7 @@ speaks HTTP!
 
 ## Setup
 
-We'll continue building our Sinatra application using the code from the previous
+We'll continue building our Flask application using the code from the previous
 lesson. Run these commands to install the dependencies and set up the database:
 
 ```console
