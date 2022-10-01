@@ -59,6 +59,8 @@ to go. Run these commands to install the dependencies and set up the database:
 ```console
 $ pipenv install && pipenv shell
 $ cd app
+$ export FLASK_APP=app.py
+$ export FLASK_RUN_PORT=5555
 $ flask db upgrade
 $ python seed.py
 ```
@@ -153,7 +155,7 @@ def games():
     return response
 
 if __name__ == '__main__':
-    app.run()
+    app.run(port=5555)
 
 ```
 
@@ -361,7 +363,7 @@ def game_by_id(id):
 
 With this code in place in the controller, try accessing the data about one game
 in the browser at
-[http://127.0.0.1:5000/games/1](http://127.0.0.1:5000/games/1). You should see
+[http://127.0.0.1:5555/games/1](http://127.0.0.1:5555/games/1). You should see
 an object like this in the response:
 
 ```json
@@ -528,7 +530,7 @@ def game_by_id(id):
 ```
 
 Run your server again with `flask run` and navigate to
-[http://127.0.0.1:5000/games/1](http://127.0.0.1:5000/games/1) to see your
+[http://127.0.0.1:5555/games/1](http://127.0.0.1:5555/games/1) to see your
 fully fleshed-out `GET` API:
 
 ```json
@@ -667,7 +669,7 @@ def game_by_id(id):
     return response
 
 if __name__ == '__main__':
-    app.run()
+    app.run(port=5555)
 
 ```
 
