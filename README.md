@@ -122,9 +122,9 @@ from flask_migrate import Migrate
 from models import db, User, Review, Game
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db/app.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
+app.json.compact = False
 
 migrate = Migrate(app, db)
 
@@ -165,7 +165,7 @@ explore:
 - `jsonify` is a method in Flask that _serializes_ its arguments as JSON and
   returns a `Response` object. It can accept lists or dictionaries as arguments.
   Unfortunately, it will not accept models as arguments (darn!)
-- `JSONIFY_PRETTYPRINT_REGULAR` is a configuration that has JSON responses print
+- `app.json.compact = False` is a configuration that has JSON responses print
   on separate lines with indentation. This adds some overhead, but if human eyes
   will be looking at your API, it's always good to have this set to `True`.
 - Our query results have to be reformatted as dictionaries for `jsonify` to work
@@ -621,9 +621,9 @@ from flask_migrate import Migrate
 from models import db, User, Review, Game
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db/app.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
+app.json.compact = False
 
 migrate = Migrate(app, db)
 
