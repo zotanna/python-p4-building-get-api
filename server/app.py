@@ -11,7 +11,7 @@ from models import db, User, Review, Game
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db/app.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
+app.json.compact = False
 
 migrate = Migrate(app, db)
 
@@ -22,4 +22,4 @@ def index():
     return "Index for Game/Review/User API"
 
 if __name__ == '__main__':
-    app.run()
+    app.run(port=5555, debug=True)

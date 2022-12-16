@@ -57,24 +57,22 @@ We'll build up our Flask application from a few models and views that are ready
 to go. Run these commands to install the dependencies and set up the database:
 
 ```console
-$ pipenv install && pipenv shell
-$ cd app
-$ export FLASK_APP=app.py
-$ export FLASK_RUN_PORT=5555
+$ pipenv install; pipenv shell
+$ cd server
 $ flask db upgrade
 $ python seed.py
 ```
 
-You can view the models in the `app/models.py` module, and the migrations in the
-`app/migrations/versions` directory. Here's what the relationships will look
+You can view the models in the `server/models.py` module, and the migrations in the
+`server/migrations/versions` directory. Here's what the relationships will look
 like in our ERD:
 
 ![Game Reviews ERD](https://curriculum-content.s3.amazonaws.com/phase-3/active-record-associations-many-to-many/games-reviews-users-erd.png)
 
-Then, run the server with Flask:
+Then, run the server:
 
 ```console
-$ flask run
+$ python app.py
 ```
 
 With that set up, let's work on getting Flask and SQLAlchemy working
@@ -113,7 +111,7 @@ It's now our job to set up the server so that when a GET request is made to
 Let's set that up in Flask:
 
 ```py
-# app/app.py
+# server/app.py
 
 from flask import Flask, jsonify, make_response
 from flask_sqlalchemy import SQLAlchemy
@@ -155,7 +153,7 @@ def games():
     return response
 
 if __name__ == '__main__':
-    app.run(port=5555)
+    app.run(port=5555, debug=True)
 
 ```
 
@@ -164,7 +162,7 @@ explore:
 
 - `jsonify` is a method in Flask that _serializes_ its arguments as JSON and
   returns a `Response` object. It can accept lists or dictionaries as arguments.
-  Unfortunately, it will not accept models as arguments (darn!)
+  Unfortunately, it will not accept models as arguments (darn!).
 - `app.json.compact = False` is a configuration that has JSON responses print
   on separate lines with indentation. This adds some overhead, but if human eyes
   will be looking at your API, it's always good to have this set to `True`.
@@ -173,8 +171,12 @@ explore:
   records have attributes that are nonstandard Python objects. We're leaving
   `game.id` out here because `game.title` is already set to unique.
 
-Rerun `flask run` in the console from the `app` directory and you should see
-something similar to the following:
+> **NOTE: `jsonify()` is now run automatically on all dictionaries returned by
+> Flask views. We'll just pass in those dictionaries from now on, but remember
+> what `jsonify()`'s doing for you behind the scenes!**
+
+Rerun `python app.py` in the console from the `server/` directory and you should
+see something similar to the following:
 
 ```json
 [
@@ -239,7 +241,7 @@ Or just return the first 10 games:
 
 ```py
 # example
-first_10_games = Game.query.liit(10).all()
+first_10_games = Game.query.limit(10).all()
 ```
 
 Now that you have full control over how the server handles the response, you
@@ -254,7 +256,7 @@ this by changing the response header for all our routes by adding this to the
 `games()` view:
 
 ```py
-# app/app.py
+# server/app.py
 
 # import, config, index
 
@@ -272,13 +274,15 @@ def games():
         games.append(game_dict)
 
     response = make_response(
-        jsonify(games),
-        200
+        games,
+        200,
+        {"Content-Type": "application/json"}
     )
-    response.headers["Content-Type"] = "application/json"
 
     return response
 ```
+
+...though this is unnecessary in this case due to `jsonify()`!
 
 [response header]: https://developer.mozilla.org/en-US/docs/Glossary/Response_header
 
@@ -329,21 +333,21 @@ with the ID of 29.
 
 As we saw in the previous module, we can access data from the dynamic portion of
 the URL by using the dynamic parameter name as an argument for the view. After
-this, we will access the unique record using SQLAlchemy's `query.filter_by()`
+this, we will access the unique record using SQLAlchemy's `query.filter()`
 method and returning the first result.
 
-> **NOTE: to retrieve the one, correct result for your filter_by statement, you
+> **NOTE: to retrieve the one, correct result for your filter statement, you
 > must use a _unique_ attribute. Make sure you only use unique attributes in
 > your dynamic URLs!**
 
 ```py
-# app/app.py
+# server/app.py
 
 # import, config, index, games
 
 @app.route('/games/<int:id>')
 def game_by_id(id):
-    game = Game.query.filter_by(id=id).first()
+    game = Game.query.filter(Game.id == id).first()
     
     game_dict = {
         "title": game.title,
@@ -353,10 +357,9 @@ def game_by_id(id):
     }
 
     response = make_response(
-        jsonify(game_dict),
+        game_dict,
         200
     )
-    response.headers["Content-Type"] = "application/json"
 
     return response
 ```
@@ -391,7 +394,8 @@ Let's take a look at the JSON being returned from the server. How does this
 Python code:
 
 ```py
-game = Game.query.filter_by(id=id).first()
+game = Game.query.filter(Game.id == id).first()
+
 ```
 
 ...turn into this JSON object?
@@ -425,7 +429,7 @@ it.
 Let's modify `models.py` to serialize the `Game` model:
 
 ```py
-# app/models.py
+# server/models.py
 
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy_serializer import SerializerMixin
@@ -512,10 +516,10 @@ Let's reconfigure the `games/<int:id>` view to show reviews with our new,
 simpler strategy for serialization:
 
 ```py
-# app/app.py
+# server/app.py
 @app.route('/games/<int:id>')
 def game_by_id(id):
-    game = Game.query.filter_by(id=id).first()
+    game = Game.query.filter(Game.id == id).first()
     
     game_dict = game.to_dict()
 
@@ -527,6 +531,7 @@ def game_by_id(id):
     response.headers["Content-Type"] = "application/json"
 
     return response
+
 ```
 
 Run your server again with `flask run` and navigate to
@@ -610,7 +615,7 @@ up this interface is fairly straightforward.
 ## Solution Code
 
 ```py
-# app/app.py
+# server/app.py
 
 #!/usr/bin/env python3
 
@@ -647,34 +652,32 @@ def games():
         games.append(game_dict)
 
     response = make_response(
-        jsonify(games),
+        games,
         200
     )
-    response.headers["Content-Type"] = "application/json"
 
     return response
 
 @app.route('/games/<int:id>')
 def game_by_id(id):
-    game = Game.query.filter_by(id=id).first()
+    game = Game.query.filter(Game.id == id).first()
     
     game_dict = game.to_dict()
 
     response = make_response(
-        jsonify(game_dict),
+        game_dict,
         200
     )
-    response.headers["Content-Type"] = "application/json"
 
     return response
 
 if __name__ == '__main__':
-    app.run(port=5555)
+    app.run(port=5555, debug=True)
 
 ```
 
 ```py
-# app/models.py
+# server/models.py
 
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy_serializer import SerializerMixin
