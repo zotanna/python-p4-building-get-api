@@ -65,7 +65,6 @@ platforms = [
 
 fake = Faker()
 
-db.init_app(app)
 with app.app_context():
 
     Review.query.delete()
