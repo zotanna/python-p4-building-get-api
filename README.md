@@ -462,12 +462,12 @@ class Game(db.Model, SerializerMixin):
 ```
 
 The simple inclusion of `SerializerMixin` adds a `to_dict()` instance method to
-the `Game` model. Run `python debug.py` to open up an interactive shell and
+the `Game` model. Run `flask shell` to open up an interactive shell and
 enter the following:
 
 ```console
-ipdb> game = Game.query.first()
-ipdb> game.to_dict()
+$ game = Game.query.first()
+$ game.to_dict()
 # => Can not serialize type:Review
 # => Can not serialize type:Review
 # => Can not serialize type:Review
@@ -508,12 +508,12 @@ class User(db.Model, SerializerMixin):
     # columns, repr
 ```
 
-Now rerun `debug.py` and enter the same command. You should see all of the
+Now rerun `flask shell` and enter the same command. You should see all of the
 first game's reviews!
 
 ```console
-ipdb> game = Game.query.first()
-ipdb> game.to_dict()
+$ game = Game.query.first()
+$ game.to_dict()
 # => {'price': 29, 'platform': 'NES', 'reviews': [{'updated_at': None, 'id': 157, 'user_id': 27, 'created_at': '2022-09-12 16:45:48', 'user': {'name': 'Bradley Best', 'updated_at': None, 'id': 27, 'created_at': '2022-09-12 16:45:47'}, 'comment': 'Administration against age also dinner sound single.', 'score': 2, 'game_id': 1}, {'updated_at': None, 'id': 159, 'user_id': 27, 'created_at': '2022-09-12 16:45:48', 'user': {'name': 'Bradley Best', 'updated_at': None, 'id': 27, 'created_at': '2022-09-12 16:45:47'}, 'comment': 'None minute perhaps group.', 'score': 6, 'game_id': 1}, {'updated_at': None, 'id': 518, 'user_id': 93, 'created_at': '2022-09-12 16:45:48', 'user': {'name': 'David Mills', 'updated_at': None, 'id': 93, 'created_at': '2022-09-12 16:45:47'}, 'comment': 'Story majority out store.', 'score': 0, 'game_id': 1}], 'updated_at': None, 'id': 1, 'created_at': '2022-09-12 16:45:47', 'genre': 'Racing', 'title': 'Beat go these.'}
 ```
 
